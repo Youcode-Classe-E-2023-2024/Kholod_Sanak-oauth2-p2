@@ -1,23 +1,56 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">{{ __('Dashboard') }}</div>
 
-                <div class="card-body">
-                    @if (session('status'))
-                        <div class="alert alert-success" role="alert">
-                            {{ session('status') }}
-                        </div>
-                    @endif
+    <home-component>
 
-                    {{ __('You are logged in!') }}
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+    </home-component>
+
+
+
+
+
+@endsection
+
+@section('scripts')
+
+    {{-- users table--}}
+    {{-- show users--}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get the token from local storage
+            var token = localStorage.getItem('token');
+
+            // Function to fetch users from API and populate the table
+            function fetchUsers() {
+                axios.get('/api/users', {
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                })
+                    .then(function(response) {
+                        // Clear existing table rows
+                        var tableBody = document.querySelector('#user-table tbody');
+                        tableBody.innerHTML = '';
+
+                        // Loop through each user and append a table row
+                        response.data.forEach(function(user) {
+                            var row = '<tr>';
+                            row += '<td>' + user.id + '</td>';
+                            row += '<td>' + user.name + '</td>';
+                            row += '<td>' + user.email + '</td>';
+                            row += '<td><button class="btn btn-primary">Edit</button> <button class="btn btn-danger">Delete</button></td>';
+                            row += '</tr>';
+                            tableBody.innerHTML += row;
+                        });
+                    })
+                    .catch(function(error) {
+                        console.error(error);
+                    });
+            }
+
+            // Initial fetch of users when the page loads
+            fetchUsers();
+        });
+    </script>
 @endsection
