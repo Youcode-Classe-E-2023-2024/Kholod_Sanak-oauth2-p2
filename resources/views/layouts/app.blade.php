@@ -106,21 +106,22 @@ document.addEventListener("DOMContentLoaded", function() {
                         console.log(response);
                         // console.log( response.data.username);
 
-                        // Store authentication token in local storage
+
                         localStorage.setItem('token', response.data.token);
-                        localStorage.setItem('userName',response.data.username)
+                        localStorage.setItem('userName',response.data.username);
+                        localStorage.setItem('userRole',response.data.role);
+                        // let userRole = response.data.role;
+
 
                         // Redirect the user to the home page
                         window.location.href = '{{ route('home') }}';
                     } else {
                         console.error('Token not found in response:', response);
-                        // Show error message to the user or handle the case where token is not returned
                     }
                 })
                 .catch(error => {
                     // Handle login error
                     console.error('Login failed:', error);
-                    // Show error message to the user
                 });
         });
     });
@@ -169,6 +170,6 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 </script>
 
-{{--authentifated page--}}
+{{--authentifated pages--}}
 <script></script>
 </html>
