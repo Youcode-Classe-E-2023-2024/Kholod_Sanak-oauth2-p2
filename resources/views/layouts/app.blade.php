@@ -12,6 +12,8 @@
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
 
     <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
@@ -47,6 +49,8 @@
         </main>
     </div>
 </body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 {{--Register--}}
 <script>
@@ -134,22 +138,19 @@ document.addEventListener("DOMContentLoaded", function() {
         // Check if the user is authenticated
         const token = localStorage.getItem('token');
         if (token) {
-            // If authenticated, display the user's name and a logout link
             const userName = localStorage.getItem('userName');
-            authLinks.innerHTML = `
-                <li class="nav-item dropdown">
-                    <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        ${userName}
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="#" onclick="logout()">
-                            Logout
-                        </a>
-                    </div>
-                </li>
-            `;
+            authLinks.innerHTML =  `
+    <li class="nav-item ">
+        <a class="nav-link" href="#" >
+            ${userName}
+        </a>
+
+     <li><a class="nav-link" href="#" onclick="logout()">Logout</a></li>
+
+    </li>
+`;
         } else {
-            // If not authenticated, display login and register links
+
             authLinks.innerHTML = `
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('login') }}">Login</a>
@@ -165,11 +166,10 @@ document.addEventListener("DOMContentLoaded", function() {
     function logout() {
         localStorage.removeItem('token');
         localStorage.removeItem('userName');
-        // Redirect or perform other actions as needed
         window.location.href = '{{ route('login') }}';
     }
 </script>
 
 {{--authentifated pages--}}
-<script></script>
+
 </html>
