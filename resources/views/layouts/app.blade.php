@@ -34,39 +34,9 @@
                     </ul>
 
                     <!-- Right Side Of Navbar -->
-                    <ul class="navbar-nav ms-auto">
+                    <ul class="navbar-nav ms-auto" id="authLinks">
                         <!-- Authentication Links -->
-                        @guest
-                            @if (Route::has('login'))
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
-                                </li>
-                            @endif
 
-                            @if (Route::has('register'))
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
-                                </li>
-                            @endif
-                        @else
-                            <li class="nav-item dropdown">
-                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                    {{ Auth::user()->name }}
-                                </a>
-
-                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href="{{ route('logout') }}"
-                                       onclick="event.preventDefault();
-                                                     document.getElementById('logout-form').submit();">
-                                        {{ __('Logout') }}
-                                    </a>
-
-                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                                        @csrf
-                                    </form>
-                                </div>
-                            </li>
-                        @endguest
                     </ul>
                 </div>
             </div>
@@ -77,4 +47,128 @@
         </main>
     </div>
 </body>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+{{--Register--}}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Get the form element
+        const form = document.getElementById('registerForm');
+
+        // Add event listener for form submission
+        form.addEventListener('submit', function(event) {
+            // Prevent the default form submission behavior
+            event.preventDefault();
+
+            // Collect form data using FormData constructor with event.target
+            const formData = new FormData(event.target);
+
+            // Send AJAX request using Axios
+            axios.post('{{ url('api/auth/register') }}', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data', // Set content type for FormData
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            })
+                .then(response => {
+                    // Handle successful registration
+                    console.log('Registration successful');
+                    window.location.href = '{{ route('login') }}';
+                })
+                .catch(error => {
+                    // Handle registration error
+                    console.error('Registration failed:', error);
+                    // Show error message to the user
+                });
+        });
+    });
+</script>
+{{--Login--}}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+        // Get the form element
+        const form = document.getElementById('loginForm');
+
+        // Add event listener for form submission
+        form.addEventListener('submit', function(event) {
+            // Prevent the default form submission behavior
+            event.preventDefault();
+
+            // Collect form data using FormData constructor with event.target
+            const formData = new FormData(event.target);
+
+            // Send AJAX request using Axios
+            axios.post('{{ url('api/auth/login') }}', formData)
+                .then(response => {
+                    // Check if the response contains the token
+                    if (response.data.token) {
+                        // Handle successful login
+                        console.log('Login successful');
+                        console.log(response);
+                        // console.log( response.data.username);
+
+                        // Store authentication token in local storage
+                        localStorage.setItem('token', response.data.token);
+                        localStorage.setItem('userName',response.data.username)
+
+                        // Redirect the user to the home page
+                        window.location.href = '{{ route('home') }}';
+                    } else {
+                        console.error('Token not found in response:', response);
+                        // Show error message to the user or handle the case where token is not returned
+                    }
+                })
+                .catch(error => {
+                    // Handle login error
+                    console.error('Login failed:', error);
+                    // Show error message to the user
+                });
+        });
+    });
+</script>
+{{--Navbar--}}
+<script>
+ document.addEventListener("DOMContentLoaded", function() {
+        const authLinks = document.getElementById('authLinks');
+
+        // Check if the user is authenticated
+        const token = localStorage.getItem('token');
+        if (token) {
+            // If authenticated, display the user's name and a logout link
+            const userName = localStorage.getItem('userName');
+            authLinks.innerHTML = `
+                <li class="nav-item dropdown">
+                    <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        ${userName}
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="#" onclick="logout()">
+                            Logout
+                        </a>
+                    </div>
+                </li>
+            `;
+        } else {
+            // If not authenticated, display login and register links
+            authLinks.innerHTML = `
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('login') }}">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('register') }}">Register</a>
+                </li>
+            `;
+        }
+    });
+
+    // Function to handle logout
+    function logout() {
+        localStorage.removeItem('token');
+        localStorage.removeItem('userName');
+        // Redirect or perform other actions as needed
+        window.location.href = '{{ route('login') }}';
+    }
+</script>
+
+{{--authentifated page--}}
+<script></script>
 </html>
