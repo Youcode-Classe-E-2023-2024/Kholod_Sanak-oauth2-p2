@@ -67,6 +67,7 @@ public function login(Request $request){
         'message' => 'Login successful',
         'user'=>$user,
         'username'=>$user->name,
+        'role'=>$user->role->name,
         'token'=> $user->access_token,
     ],200);
 
