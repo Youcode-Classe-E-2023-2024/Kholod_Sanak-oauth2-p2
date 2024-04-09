@@ -65,7 +65,8 @@ public function login(Request $request){
     $user->access_token = $token->accessToken;
     return response()->json([
         'message' => 'Login successful',
-        ' user'=>$user,
+        'user'=>$user,
+        'username'=>$user->name,
         'token'=> $user->access_token,
     ],200);
 
@@ -75,22 +76,39 @@ public function login(Request $request){
 //public function register(){
 //    echo "register endpoint";
 //}
+
     public function register(Request $request) {
-//        $request->validate([
-//            'name' => 'required|string',
-//            'email' => 'required|string|email|unique:users',
-//            'password' => 'required|string|confirmed'
-//        ]);
+
+        // Validate the incoming request data
+        $request->validate([
+            'name' => 'required|string',
+            'email' => 'required|string|email|unique:users',
+            'password' => 'required|string|confirmed'
+        ]);
 
         // Retrieve the default role ("user")
         $defaultRole = Role::where('name', 'user')->first();
 
+        // Ensure that the default role exists
+        if (!$defaultRole) {
+            return response()->json([
+                "error" => "Default role 'user' not found"
+            ], 404);
+        }
+
         // Create the user with the default role attached
-        $user = $defaultRole->users()->create([
+        $user = new User([
             'name' => $request->name,
             'email' => $request->email,
             'password' => bcrypt($request->password),
         ]);
+
+        // Save the user
+//        $user->save();
+
+        // Assign the default role to the user
+        $user->role()->associate($defaultRole);
+        $user->save();
 
         return response()->json([
             "message" => "User registered successfully"
