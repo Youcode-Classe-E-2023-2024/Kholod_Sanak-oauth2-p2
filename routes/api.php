@@ -92,16 +92,19 @@ Route::namespace('Api')->group(function (){
     Route::get('/mot-de-passe/reinitialiser/{token}', [AuthController::class, 'showResetForm'])->name('password.reset');
     Route::post('/mot-de-passe/reset/', [AuthController::class, 'reset']);
 
-    Route::prefix('auth')->group(function (){
+    Route::middleware('guest')->prefix('auth')->group(function (){
         Route::post('login', [AuthController::class, 'login']);
         Route::post('register', [AuthController::class, 'register']);
     });
+
 
     Route::group([
         'middleware'=> 'auth:api'
     ],function (){
         Route::get('helloworld', [AuthController::class, 'index']);
         Route::post('logout',[AuthController::class,'logout']);
+        Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
     });
 });
 
