@@ -17,8 +17,12 @@ const app = createApp({});
 
 import ExampleComponent from './components/ExampleComponent.vue';
 import HomeComponent from "./components/HomeComponent.vue";
+import UserComponent from "./components/UserComponent.vue";
+import RoleComponent from "./components/RoleComponent.vue";
 
 app.component('home-component', HomeComponent);
+app.component('user-component',UserComponent);
+app.component('role-component',RoleComponent);
 
 
 
