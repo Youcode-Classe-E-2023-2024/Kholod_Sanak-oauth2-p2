@@ -152,13 +152,49 @@ use Illuminate\Support\Facades\Validator;
 class UserController extends Controller
 {
 
+
+    public function assignRole(Request $request)
+    {
+        // Check if the authenticated user is an admin
+        if (!auth()->check() || !auth()->user()->isAdmin()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        // Validate the incoming request data
+        $request->validate([
+            'user_id' => 'required|integer',
+            'role_name' => 'required|string',
+        ]);
+
+        // Retrieve the user instance based on the provided ID
+        $user = User::findOrFail($request->user_id);
+
+
+        // Retrieve the role by name
+        $role = Role::where('name', $request->role_name)->first();
+
+        if (!$role) {
+            // Role not found, return an error response
+            return response()->json(['error' => 'Role not found'], 404);
+        }
+
+        // Attach the role to the user
+        $user->role()->associate($role)->save();
+
+        // Return a success response
+        return response()->json([
+            'message' => 'Role assigned successfully',
+            'user' => $user,
+        ], 200);
+    }
+
 //Méthode pour afficher tous les utilisateurs
 //http://localhost:8000/api/users
     public function index()
     {
         $this->authorize('viewAny', User::class);
 
-        $users = User::all();
+        $users = User::with('role')->get();
         return response()->json($users);
     }
 
@@ -217,7 +253,7 @@ class UserController extends Controller
 //    http://localhost:8000/api/users/{id}
 
 
-    public function update(Request $request, $id)
+    public function update1(Request $request, $id)
     {
         $user = User::findOrFail($id);
         $this->authorize('update', $user);
@@ -231,6 +267,48 @@ class UserController extends Controller
 
         return response()->json($user, 200);
     }
+
+    public function update(Request $request, $id)
+    {
+       // dd($request);
+        $user = User::findOrFail($id);
+        $this->authorize('update', $user);
+
+        $userData = $request->except('password', 'role_name');
+
+        if ($request->has('password')) {
+            $userData['password'] = Hash::make($request->get('password'));
+        }
+
+        if ($request->has('role_name')) {
+            // Validate the incoming request data
+            $request->validate([
+                'role_name' => 'required|string',
+            ]);
+
+            // Retrieve the role by name
+            $role = Role::where('name', $request->role_name)->first();
+
+            if (!$role) {
+                // Role not found, return an error response
+                return response()->json(['error' => 'Role not found'], 404);
+            }
+
+            // Attach the role to the user
+            $user->role()->associate($role)->save();
+
+            return response()->json([
+                'message' => 'Role assigned successfully',
+                'user' => $user,
+            ], 200);
+        }
+
+        // Update the user's information
+        $user->update($userData);
+
+        return response()->json($user, 200);
+    }
+
 
     // Méthode pour supprimer un utilisateur
 

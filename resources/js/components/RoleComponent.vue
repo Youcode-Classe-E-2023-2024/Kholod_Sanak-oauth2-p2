@@ -99,7 +99,6 @@ export default {
     },
 
     methods: {
-        // Function to fetch roles from the API and populate the table
         fetchRoles() {
             // Get the token from local storage
             var token = localStorage.getItem('token');
@@ -111,8 +110,7 @@ export default {
                 }
             })
                 .then(response => {
-                    // Handle successful response
-                    // Update the roles data in the component with the response data
+
                     this.roles = response.data;
                 })
                 .catch(error => {

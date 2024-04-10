@@ -20,35 +20,6 @@ class AuthController extends Controller
 //}
 
 
-    public function assignRole(Request $request)
-    {
-        // Validate the incoming request data
-        $request->validate([
-            'user_id' => 'required|integer',
-            'role_name' => 'required|string',
-        ]);
-
-        // Retrieve the user instance based on the provided ID
-        $user = User::findOrFail($request->user_id);
-
-        // Retrieve the role by name
-        $role = Role::where('name', $request->role_name)->first();
-
-        if (!$role) {
-            // Role not found, return an error response
-            return response()->json(['error' => 'Role not found'], 404);
-        }
-
-        // Attach the role to the user
-        $user->role()->associate($role)->save();
-
-        // Return a success response
-        return response()->json([
-            'message' => 'Role assigned successfully',
-            'user' => $user,
-//            'role' => $role
-        ], 200);
-    }
 
 
     //http://localhost:8000/api/auth/login

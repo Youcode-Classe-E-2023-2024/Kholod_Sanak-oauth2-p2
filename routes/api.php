@@ -81,7 +81,6 @@ Route::middleware('auth:api')->group(function () {
 */
 Route::namespace('Api')->group(function (){
 
-    Route::post('/assign-role', [AuthController::class, 'assignRole']);
 
     /*
     |--------------------------------------------------------------------------
@@ -104,7 +103,7 @@ Route::namespace('Api')->group(function (){
         Route::get('helloworld', [AuthController::class, 'index']);
         Route::post('logout',[AuthController::class,'logout']);
         Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-
+        Route::put('/users/{id}/assign-role', [UserController::class, 'assignRole']);
     });
 });
 
